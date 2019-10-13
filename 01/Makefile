@@ -1,3 +1,4 @@
+all: clean calc test
 calc : main.cpp
 	g++ main.cpp -o calc
 debug : main.cpp 
@@ -8,4 +9,4 @@ test : calc test.py
 	python test.py
 clean : 
 	rm -rf calc
-all: clean calc test
+
