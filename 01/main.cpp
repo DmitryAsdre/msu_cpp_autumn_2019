@@ -247,7 +247,12 @@ bool checkInput(const string& input)
         else if(currentLexem.type == OPEN_BRAKE)
         {
             counter++;
-            if(previousLexem.type == NUM || previousLexem.type == CLOSE_BRAKE)
+            if(previousLexem.type == NUM || previousLexem.type == CLOSE_BRAKE ) 
+            {
+                cout << "error" << endl;
+                exit(EXIT_FAILURE);
+            }
+            if(nextLexem.type == CLOSE_BRAKE || nextLexem.type == END)
             {
                 cout << "error" << endl;
                 exit(EXIT_FAILURE);
@@ -257,6 +262,11 @@ bool checkInput(const string& input)
         {
             counter--;
             if(nextLexem.type == NUM || nextLexem.type == OPEN_BRAKE)
+            {
+                cout << "error" << endl;
+                exit(EXIT_FAILURE);
+            }
+            if(previousLexem.type == BEGIN)
             {
                 cout << "error" << endl;
                 exit(EXIT_FAILURE);
