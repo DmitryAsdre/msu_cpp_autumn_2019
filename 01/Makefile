@@ -6,7 +6,7 @@ debug : main.cpp
 run : calc 
 	./calc $(ARGS)
 test : calc test.py
-	python test.py
+	python2 test.py
 clean : 
 	rm -rf calc
 
