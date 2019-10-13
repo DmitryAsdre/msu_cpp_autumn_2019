@@ -28,6 +28,9 @@ def test(command, expected_code, expected_value):
         print ('empty output')
         return
     print ('ok') 
+test('./calc ""', 1, ['error'])
+test('./calc " "', 1, ['error'])
+test('./calc "                 "', 1, ['error'])
 test('./calc "()"', 1, ['error'])
 test('./calc ")"', 1, ['error'])
 test('./calc "("', 1, ['error'])

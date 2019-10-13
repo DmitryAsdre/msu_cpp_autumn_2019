@@ -220,6 +220,11 @@ bool checkInput(const string& input)
     curLexem = getNextLexem(input);
     nextLexem = curLexem;
     long long int counter = 0;
+    if(currentLexem.type == END && previousLexem.type == BEGIN)
+    {
+        cout << "error" << endl;
+        exit(EXIT_FAILURE);
+    }
     while(currentLexem.type != END)
     {
         //cout << previousLexem << " " <<  currentLexem << " " << nextLexem << endl;
@@ -279,7 +284,7 @@ bool checkInput(const string& input)
                 cout << "error" << endl;
                 exit(EXIT_FAILURE);
             }
-        }            
+        }
         previousLexem = currentLexem;
         currentLexem = nextLexem;
         curLexem = getNextLexem(input);
