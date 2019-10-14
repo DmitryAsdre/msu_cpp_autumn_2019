@@ -6,7 +6,7 @@
 using namespace std;
 
 const double EPS = 1e-16;
-typedef enum 
+enum LexemType
 {
     NUM,
     OPEN_BRAKE,
@@ -18,26 +18,26 @@ typedef enum
     DIV,
     END,
     BEGIN
-}LexemType;
+};
 
-typedef struct
+struct LexemHandler
 {
     LexemType type;
     double num;
-}LexemHandler;
+};
 
-LexemHandler curLexem = {BEGIN, 0.};
-size_t curPosition = 0;
+//LexemHandler curLexem = {BEGIN, 0.};
+//size_t curPosition = 0;
 
 ostream & operator <<(ostream & os, const LexemHandler& lexem);
 
-LexemHandler getNextLexem(const string& input);
+void getNextLexem(const string& input, size_t& curPosition, LexemHandler& curLexem) ;
 
-double expression(const string& input);
-double item(const string& input);
-double mult(const string& input); 
+double expression(const string& input, size_t& curPosition, LexemHandler& curLexem);
+double item(const string& input, size_t& curPosition, LexemHandler& curLexem);
+double mult(const string& input, size_t& curPosition, LexemHandler& curLexem); 
 
-bool checkInput(const string& input);
+void checkInput(const string& input);
 
 int main(int argc, char ** argv)
 {
@@ -47,9 +47,19 @@ int main(int argc, char ** argv)
         return EXIT_FAILURE;
     }
     string input(argv[1]);
-    checkInput(input);
-    curLexem = getNextLexem(input);
-    cout << expression(input) << endl;
+    LexemHandler curLexem = {BEGIN, 0.};
+    size_t curPosition = 0;
+    try
+    {
+        checkInput(input);
+        getNextLexem(input, curPosition, curLexem);
+        cout << expression(input, curPosition, curLexem) << endl;
+    }
+    catch(const std::exception& e)
+    {
+        cout << e.what() << endl;
+        return EXIT_FAILURE;
+    }
     return EXIT_SUCCESS;
 }
 ostream& operator <<(ostream& os, const LexemHandler& lexem)
@@ -74,17 +84,18 @@ ostream& operator <<(ostream& os, const LexemHandler& lexem)
         os << "END";
     else if(lexem.type == BEGIN)
         os << "BEGIN";
+    else 
+        throw runtime_error("UNKNOWN_LEXEM_OPERATOR<<");
     return os;
 }
-LexemHandler getNextLexem(const string& input)
+void getNextLexem(const string& input, size_t& curPosition, LexemHandler& curLexem)
 {
-    LexemHandler lexem;
     while(curPosition < input.size() && input[curPosition] == ' ')
         curPosition++;
     if(curPosition == input.size())
     {
-        lexem.type = END;
-        return lexem;
+        curLexem.type = END;
+        return ;
     }
     if(input[curPosition] - '0' < 10 && input[curPosition] - '0' >= 0)
     {
@@ -94,113 +105,108 @@ LexemHandler getNextLexem(const string& input)
             buffer.push_back(input[curPosition]);
             curPosition++;
         }        
-        lexem.type = NUM;
-        lexem.num =  stod(buffer);
+        curLexem.type = NUM;
+        curLexem.num =  stod(buffer);
     } 
     else if (input[curPosition] == '(')
     {
-        lexem.type = OPEN_BRAKE;
+        curLexem.type = OPEN_BRAKE;
         curPosition++;
     }
     else if(input[curPosition] == ')')
     {
-        lexem.type = CLOSE_BRAKE;
+        curLexem.type = CLOSE_BRAKE;
         curPosition++;
     }
     else if(input[curPosition] == '+') 
     {
-        lexem.type = PLUS;
+        curLexem.type = PLUS;
         curPosition++;
     }
     else if(input[curPosition] == '-')
     {
         if(curLexem.type != BEGIN &&(curLexem.type == CLOSE_BRAKE || curLexem.type == NUM))
         {
-            lexem.type = MINUS;
+            curLexem.type = MINUS;
             curPosition++;
         }
         else
         {
-            lexem.type = UN_MINUS;
+            curLexem.type = UN_MINUS;
             curPosition++;
         }
     }
     else if(input[curPosition] == '*')
     {
-        lexem.type = MULT;
+        curLexem.type = MULT;
         curPosition++;
     }
     else if(input[curPosition] == '/')
     {
-        lexem.type = DIV;
+        curLexem.type = DIV;
         curPosition++;
     }
     else 
-    {
-        cout << "error" << endl;
-        exit(EXIT_FAILURE);
-    }
-    return lexem;
+        throw runtime_error("unknown_lexem");
 }
-double expression(const string& input)
+double expression(const string& input, size_t& curPosition, LexemHandler& curLexem)
 {
     double tmp = 0;
-    tmp = item(input);
+    tmp = item(input, curPosition, curLexem);
     while(curLexem.type == PLUS || curLexem.type == MINUS)
     {
         if(curLexem.type == PLUS)
         {
-            curLexem = getNextLexem(input);
-            tmp += item(input);  
+            getNextLexem(input, curPosition, curLexem);
+            tmp += item(input, curPosition, curLexem);  
         }
         else if(curLexem.type == MINUS)
         {
-            curLexem =  getNextLexem(input);
-            tmp -= item(input);
+            getNextLexem(input, curPosition, curLexem);
+            tmp -= item(input, curPosition, curLexem);
         }
     }
     return tmp;
 }
-double item(const string& input)
+double item(const string& input, size_t& curPosition, LexemHandler& curLexem)
 {
     double tmp = 1;
-    tmp = mult(input);
+    tmp = mult(input, curPosition, curLexem);
     while(curLexem.type == MULT || curLexem.type == DIV)
     {
         if(curLexem.type == MULT)
         {
-            curLexem = getNextLexem(input);
-            tmp *= mult(input);
+            getNextLexem(input, curPosition, curLexem);
+            tmp *= mult(input, curPosition, curLexem);
         }
         else if(curLexem.type == DIV)
         {
-            curLexem = getNextLexem(input);
-            double res = mult(input);
+            getNextLexem(input, curPosition, curLexem);
+            double res = mult(input, curPosition, curLexem);
             if(fabs(res) < EPS)
             {
-                cout << "error" << endl;
-                exit(EXIT_FAILURE);
+                throw runtime_error("division_by_0");
             }
             tmp /= res;
         }
     }
     return tmp;
 }
-double mult(const string& input)
+double mult(const string& input, size_t& curPosition, LexemHandler& curLexem)
 {
     double tmp = 0;
     if(curLexem.type == NUM)
     {
         tmp = curLexem.num;
-        curLexem = getNextLexem(input); 
+        getNextLexem(input, curPosition, curLexem); 
     }
     else if(curLexem.type == OPEN_BRAKE)
     {
-        curLexem = getNextLexem(input);
-        tmp = expression(input);
+        getNextLexem(input, curPosition, curLexem);
+        tmp = expression(input, curPosition, curLexem);
         if(curLexem.type == CLOSE_BRAKE)
         {
-            curLexem = getNextLexem(input);
+            getNextLexem(input, curPosition, curLexem);
         }
     }    
     else if(curLexem.type == UN_MINUS)
@@ -210,20 +216,22 @@ double mult(const string& input)
     }
     return tmp;
 }  
-bool checkInput(const string& input)
+
+void checkInput(const string& input)
 {
     LexemHandler previousLexem = {BEGIN, 0.};
     LexemHandler currentLexem = {BEGIN, 0.};
     LexemHandler nextLexem = {BEGIN, 0.};
-    curLexem = getNextLexem(input);
+    LexemHandler curLexem = {BEGIN, 0};
+    size_t curPosition = 0;
+    getNextLexem(input, curPosition, curLexem);
     currentLexem = curLexem;
-    curLexem = getNextLexem(input);
+    getNextLexem(input, curPosition, curLexem); 
     nextLexem = curLexem;
     long long int counter = 0;
     if(currentLexem.type == END && previousLexem.type == BEGIN)
     {
-        cout << "error" << endl;
-        exit(EXIT_FAILURE);
+        throw runtime_error("empty_input");
     }
     while(currentLexem.type != END)
     {
@@ -231,68 +239,44 @@ bool checkInput(const string& input)
         if(currentLexem.type == PLUS || currentLexem.type == MINUS || currentLexem.type == MULT || currentLexem.type == DIV)
         {
             if(previousLexem.type != CLOSE_BRAKE && previousLexem.type != NUM)
-            {
-                cout << "error" << endl;
-                exit(EXIT_FAILURE);
-            }
+                throw runtime_error("binary_operator_error");
             if(nextLexem.type != OPEN_BRAKE && nextLexem.type != NUM && nextLexem.type != UN_MINUS)
-            {
-                cout << "error" << endl;
-                exit(EXIT_FAILURE);
-            }
+                throw runtime_error("binary_operator_error");
         }
         else if(currentLexem.type == UN_MINUS)
         {
             if(nextLexem.type != OPEN_BRAKE && nextLexem.type != NUM && nextLexem.type != UN_MINUS)
-            {
-                cout << "error" << endl;
-                exit(EXIT_FAILURE);
-            }
+                throw runtime_error("un_minus_error");
         }
         else if(currentLexem.type == OPEN_BRAKE)
         {
             counter++;
-            if(previousLexem.type == NUM || previousLexem.type == CLOSE_BRAKE ) 
-            {
-                cout << "error" << endl;
-                exit(EXIT_FAILURE);
-            }
+            if(previousLexem.type == NUM || previousLexem.type == CLOSE_BRAKE )
+                throw runtime_error("open_bracket_error");
             if(nextLexem.type == CLOSE_BRAKE || nextLexem.type == END)
-            {
-                cout << "error" << endl;
-                exit(EXIT_FAILURE);
-            }
+                throw runtime_error("open_bracket_error");
         }
         else if(currentLexem.type == CLOSE_BRAKE)
         {
             counter--;
             if(nextLexem.type == NUM || nextLexem.type == OPEN_BRAKE)
-            {
-                cout << "error" << endl;
-                exit(EXIT_FAILURE);
-            }
+                throw runtime_error("close_braсket_error");
             if(previousLexem.type == BEGIN)
-            {
-                cout << "error" << endl;
-                exit(EXIT_FAILURE);
-            }
+                throw runtime_error("close_bracket_error");
         }
         else if(currentLexem.type == NUM)
         {
             if(previousLexem.type == NUM)
-            {
-                cout << "error" << endl;
-                exit(EXIT_FAILURE);
-            }
+                throw runtime_error("num_error");
         }
         previousLexem = currentLexem;
         currentLexem = nextLexem;
-        curLexem = getNextLexem(input);
+        getNextLexem(input, curPosition, curLexem);
         nextLexem = curLexem;
     }
     if(abs(counter)> 0)
     {
-        cout << "error" << endl;
+        cout << "error_bracket" << endl;
         exit(EXIT_FAILURE);
     }
     curPosition = 0;
