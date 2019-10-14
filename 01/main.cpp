@@ -26,34 +26,35 @@ struct LexemHandler
     double num;
 };
 
-//LexemHandler curLexem = {BEGIN, 0.};
-//size_t curPosition = 0;
-
+void checkLexems(LexemHandler& previousLexem, LexemHandler& curLexem, long long int& bCount);
 ostream & operator <<(ostream & os, const LexemHandler& lexem);
 
-void getNextLexem(const string& input, size_t& curPosition, LexemHandler& curLexem) ;
+void getNextLexem(const string& input, size_t& curPosition, LexemHandler& curLexem, long long int& bCount) ;
 
-double expression(const string& input, size_t& curPosition, LexemHandler& curLexem);
-double item(const string& input, size_t& curPosition, LexemHandler& curLexem);
-double mult(const string& input, size_t& curPosition, LexemHandler& curLexem); 
+double expression(const string& input, size_t& curPosition, LexemHandler& curLexem, long long int& bCount);
+double item(const string& input, size_t& curPosition, LexemHandler& curLexem, long long int& bCount);
+double mult(const string& input, size_t& curPosition, LexemHandler& curLexem, long long int& bCount); 
 
-void checkInput(const string& input);
+//void checkInput(const string& input);
 
 int main(int argc, char ** argv)
 {
     if(argc != 2)
     {
-        cout << "error" << endl;
+        cout << "unexpected_input" << endl;
         return EXIT_FAILURE;
     }
     string input(argv[1]);
     LexemHandler curLexem = {BEGIN, 0.};
     size_t curPosition = 0;
+    long long int bCount = 0;
     try
     {
-        checkInput(input);
-        getNextLexem(input, curPosition, curLexem);
-        cout << expression(input, curPosition, curLexem) << endl;
+        getNextLexem(input, curPosition, curLexem, bCount);
+        double tmp = expression(input, curPosition, curLexem, bCount);
+        while(curLexem.type != END)
+            getNextLexem(input, curPosition, curLexem, bCount);
+        cout << tmp << endl;
     }
     catch(const std::exception& e)
     {
@@ -88,16 +89,15 @@ ostream& operator <<(ostream& os, const LexemHandler& lexem)
         throw runtime_error("UNKNOWN_LEXEM_OPERATOR<<");
     return os;
 }
-void getNextLexem(const string& input, size_t& curPosition, LexemHandler& curLexem)
-{
+void getNextLexem(const string& input, size_t& curPosition, LexemHandler& curLexem, long long int& bCount)
+{ 
+    LexemHandler previousLexem = curLexem;
+
     while(curPosition < input.size() && input[curPosition] == ' ')
         curPosition++;
     if(curPosition == input.size())
-    {
         curLexem.type = END;
-        return ;
-    }
-    if(input[curPosition] - '0' < 10 && input[curPosition] - '0' >= 0)
+    else if(input[curPosition] - '0' < 10 && input[curPosition] - '0' >= 0)
     {
         string buffer;
         while(curPosition < input.size() &&((input[curPosition] - '0' < 10 && input[curPosition] - '0' >= 0) || input[curPosition] == '.'))
@@ -133,9 +133,9 @@ void getNextLexem(const string& input, size_t& curPosition, LexemHandler& curLex
         else
         {
             curLexem.type = UN_MINUS;
-            curPosition++;
-        }
-    }
+            curPosition++;      
+        }       
+    }        
     else if(input[curPosition] == '*')
     {
         curLexem.type = MULT;
@@ -148,41 +148,80 @@ void getNextLexem(const string& input, size_t& curPosition, LexemHandler& curLex
     }
     else 
         throw runtime_error("unknown_lexem");
+    //cout << curLexem << " " <<  previousLexem << endl;
+    checkLexems(previousLexem, curLexem, bCount);
 }
-double expression(const string& input, size_t& curPosition, LexemHandler& curLexem)
+void checkLexems(LexemHandler& previousLexem, LexemHandler& curLexem, long long int& bCount)
+{
+    //cout << previousLexem << " " << curLexem << endl;
+    if(curLexem.type == PLUS || curLexem.type == MINUS || curLexem.type == MULT || curLexem.type == DIV)
+    {
+        if(previousLexem.type != NUM && previousLexem.type != CLOSE_BRAKE)
+            throw runtime_error("binary_operator_error");
+    }
+    else if(curLexem.type == CLOSE_BRAKE)
+    {
+        bCount--;
+        if(previousLexem.type != NUM && previousLexem.type != CLOSE_BRAKE)
+            throw runtime_error("brackets_error");        
+    }
+    else if(curLexem.type == OPEN_BRAKE)
+    {
+        bCount++;
+        if(previousLexem.type == CLOSE_BRAKE || previousLexem.type == NUM)
+            throw runtime_error("brackets_error");
+    }
+    else if(curLexem.type == UN_MINUS)
+    {
+    }
+    else if(curLexem.type == NUM)
+    {
+        if(previousLexem.type == NUM || previousLexem.type == CLOSE_BRAKE)
+            throw runtime_error("num_error");
+    }
+    else if(curLexem.type == END)
+    {
+        //cout << bCount << endl;
+        if(previousLexem.type != CLOSE_BRAKE && previousLexem.type != NUM)
+            throw runtime_error("unexpected_end");
+        if(abs(bCount) != 0)
+            throw runtime_error("brackets_error");
+    }
+}
+double expression(const string& input, size_t& curPosition, LexemHandler& curLexem, long long int& bCount)
 {
     double tmp = 0;
-    tmp = item(input, curPosition, curLexem);
+    tmp = item(input, curPosition, curLexem, bCount);
     while(curLexem.type == PLUS || curLexem.type == MINUS)
     {
         if(curLexem.type == PLUS)
         {
-            getNextLexem(input, curPosition, curLexem);
-            tmp += item(input, curPosition, curLexem);  
+            getNextLexem(input, curPosition, curLexem, bCount);
+            tmp += item(input, curPosition, curLexem, bCount);  
         }
         else if(curLexem.type == MINUS)
         {
-            getNextLexem(input, curPosition, curLexem);
-            tmp -= item(input, curPosition, curLexem);
+            getNextLexem(input, curPosition, curLexem, bCount);
+            tmp -= item(input, curPosition, curLexem, bCount);
         }
     }
     return tmp;
 }
-double item(const string& input, size_t& curPosition, LexemHandler& curLexem)
+double item(const string& input, size_t& curPosition, LexemHandler& curLexem, long long int& bCount)
 {
     double tmp = 1;
-    tmp = mult(input, curPosition, curLexem);
+    tmp = mult(input, curPosition, curLexem, bCount);
     while(curLexem.type == MULT || curLexem.type == DIV)
     {
         if(curLexem.type == MULT)
         {
-            getNextLexem(input, curPosition, curLexem);
-            tmp *= mult(input, curPosition, curLexem);
+            getNextLexem(input, curPosition, curLexem, bCount);
+            tmp *= mult(input, curPosition, curLexem, bCount);
         }
         else if(curLexem.type == DIV)
         {
-            getNextLexem(input, curPosition, curLexem);
-            double res = mult(input, curPosition, curLexem);
+            getNextLexem(input, curPosition, curLexem, bCount);
+            double res = mult(input, curPosition, curLexem, bCount);
             if(fabs(res) < EPS)
             {
                 throw runtime_error("division_by_0");
@@ -192,21 +231,21 @@ double item(const string& input, size_t& curPosition, LexemHandler& curLexem)
     }
     return tmp;
 }
-double mult(const string& input, size_t& curPosition, LexemHandler& curLexem)
+double mult(const string& input, size_t& curPosition, LexemHandler& curLexem, long long int& bCount)
 {
     double tmp = 0;
     if(curLexem.type == NUM)
     {
         tmp = curLexem.num;
-        getNextLexem(input, curPosition, curLexem); 
+        getNextLexem(input, curPosition, curLexem, bCount); 
     }
     else if(curLexem.type == OPEN_BRAKE)
     {
-        getNextLexem(input, curPosition, curLexem);
-        tmp = expression(input, curPosition, curLexem);
+        getNextLexem(input, curPosition, curLexem, bCount);
+        tmp = expression(input, curPosition, curLexem, bCount);
         if(curLexem.type == CLOSE_BRAKE)
         {
-            getNextLexem(input, curPosition, curLexem);
+            getNextLexem(input, curPosition, curLexem, bCount);
         }
     }    
     else if(curLexem.type == UN_MINUS)
@@ -216,69 +255,3 @@ double mult(const string& input, size_t& curPosition, LexemHandler& curLexem)
     }
     return tmp;
 }  
-
-void checkInput(const string& input)
-{
-    LexemHandler previousLexem = {BEGIN, 0.};
-    LexemHandler currentLexem = {BEGIN, 0.};
-    LexemHandler nextLexem = {BEGIN, 0.};
-    LexemHandler curLexem = {BEGIN, 0};
-    size_t curPosition = 0;
-    getNextLexem(input, curPosition, curLexem);
-    currentLexem = curLexem;
-    getNextLexem(input, curPosition, curLexem); 
-    nextLexem = curLexem;
-    long long int counter = 0;
-    if(currentLexem.type == END && previousLexem.type == BEGIN)
-    {
-        throw runtime_error("empty_input");
-    }
-    while(currentLexem.type != END)
-    {
-        //cout << previousLexem << " " <<  currentLexem << " " << nextLexem << endl;
-        if(currentLexem.type == PLUS || currentLexem.type == MINUS || currentLexem.type == MULT || currentLexem.type == DIV)
-        {
-            if(previousLexem.type != CLOSE_BRAKE && previousLexem.type != NUM)
-                throw runtime_error("binary_operator_error");
-            if(nextLexem.type != OPEN_BRAKE && nextLexem.type != NUM && nextLexem.type != UN_MINUS)
-                throw runtime_error("binary_operator_error");
-        }
-        else if(currentLexem.type == UN_MINUS)
-        {
-            if(nextLexem.type != OPEN_BRAKE && nextLexem.type != NUM && nextLexem.type != UN_MINUS)
-                throw runtime_error("un_minus_error");
-        }
-        else if(currentLexem.type == OPEN_BRAKE)
-        {
-            counter++;
-            if(previousLexem.type == NUM || previousLexem.type == CLOSE_BRAKE )
-                throw runtime_error("open_bracket_error");
-            if(nextLexem.type == CLOSE_BRAKE || nextLexem.type == END)
-                throw runtime_error("open_bracket_error");
-        }
-        else if(currentLexem.type == CLOSE_BRAKE)
-        {
-            counter--;
-            if(nextLexem.type == NUM || nextLexem.type == OPEN_BRAKE)
-                throw runtime_error("close_braсket_error");
-            if(previousLexem.type == BEGIN)
-                throw runtime_error("close_bracket_error");
-        }
-        else if(currentLexem.type == NUM)
-        {
-            if(previousLexem.type == NUM)
-                throw runtime_error("num_error");
-        }
-        previousLexem = currentLexem;
-        currentLexem = nextLexem;
-        getNextLexem(input, curPosition, curLexem);
-        nextLexem = curLexem;
-    }
-    if(abs(counter)> 0)
-    {
-        cout << "error_bracket" << endl;
-        exit(EXIT_FAILURE);
-    }
-    curPosition = 0;
-    curLexem = {BEGIN, 0.};
-}
