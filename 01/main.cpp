@@ -27,7 +27,7 @@ struct LexemHandler
 };
 
 void checkLexems(LexemHandler& previousLexem, LexemHandler& curLexem, long long int& bCount);
-ostream & operator <<(ostream & os, const LexemHandler& lexem);
+//ostream & operator <<(ostream & os, const LexemHandler& lexem);
 
 void getNextLexem(const string& input, size_t& curPosition, LexemHandler& curLexem, long long int& bCount) ;
 
@@ -62,7 +62,7 @@ int main(int argc, char ** argv)
     }
     return EXIT_SUCCESS;
 }
-ostream& operator <<(ostream& os, const LexemHandler& lexem)
+/*ostream& operator <<(ostream& os, const LexemHandler& lexem)
 {
     if(lexem.type == NUM)
         os << "NUM" << " " << lexem.num;
@@ -88,6 +88,7 @@ ostream& operator <<(ostream& os, const LexemHandler& lexem)
         throw runtime_error("UNKNOWN_LEXEM_OPERATOR<<");
     return os;
 }
+*/
 void getNextLexem(const string& input, size_t& curPosition, LexemHandler& curLexem, long long int& bCount)
 { 
     LexemHandler previousLexem = curLexem;
