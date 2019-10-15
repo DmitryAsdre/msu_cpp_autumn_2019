@@ -189,9 +189,7 @@ double item(const string& input, size_t& curPosition, LexemHandler& curLexem, in
             getNextLexem(input, curPosition, curLexem, bCount);
             double res = mult(input, curPosition, curLexem, bCount);
             if(fabs(res) < EPS)
-            {
                 throw runtime_error("division_by_0");
-            }
             tmp /= res;
         }
     }
@@ -217,7 +215,7 @@ double mult(const string& input, size_t& curPosition, LexemHandler& curLexem, in
     else if(curLexem.type == UN_MINUS)
     {
         curLexem.type = MULT;
-        return -1;
+        return -1.;
     }
     return tmp;
 }  
