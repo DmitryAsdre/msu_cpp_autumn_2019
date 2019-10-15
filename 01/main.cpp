@@ -35,7 +35,6 @@ double expression(const string& input, size_t& curPosition, LexemHandler& curLex
 double item(const string& input, size_t& curPosition, LexemHandler& curLexem, long long int& bCount);
 double mult(const string& input, size_t& curPosition, LexemHandler& curLexem, long long int& bCount); 
 
-//void checkInput(const string& input);
 
 int main(int argc, char ** argv)
 {
@@ -56,7 +55,7 @@ int main(int argc, char ** argv)
             getNextLexem(input, curPosition, curLexem, bCount);
         cout << tmp << endl;
     }
-    catch(const std::exception& e)
+    catch(const exception& e)
     {
         cout << e.what() << endl;
         return EXIT_FAILURE;
@@ -148,12 +147,10 @@ void getNextLexem(const string& input, size_t& curPosition, LexemHandler& curLex
     }
     else 
         throw runtime_error("unknown_lexem");
-    //cout << curLexem << " " <<  previousLexem << endl;
     checkLexems(previousLexem, curLexem, bCount);
 }
 void checkLexems(LexemHandler& previousLexem, LexemHandler& curLexem, long long int& bCount)
 {
-    //cout << previousLexem << " " << curLexem << endl;
     if(curLexem.type == PLUS || curLexem.type == MINUS || curLexem.type == MULT || curLexem.type == DIV)
     {
         if(previousLexem.type != NUM && previousLexem.type != CLOSE_BRAKE)
