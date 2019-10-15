@@ -25,14 +25,14 @@ struct LexemHandler
     LexemType type;
     double num;
 };
-
-void checkLexems(LexemHandler& previousLexem, LexemHandler& curLexem, int& bCount);
-
 void getNextLexem(const string& input, size_t& curPosition, LexemHandler& curLexem, int& bCount) ;
+void checkLexems(LexemHandler& previousLexem, LexemHandler& curLexem, int& bCount);
 
 double expression(const string& input, size_t& curPosition, LexemHandler& curLexem, int& bCount);
 double item(const string& input, size_t& curPosition, LexemHandler& curLexem, int& bCount);
-double mult(const string& input, size_t& curPosition, LexemHandler& curLexem, int& bCount); 
+double mult(const string& input, size_t& curPosition, LexemHandler& curLexem, int& bCount);
+
+double calc(const string& input);
 
 
 int main(int argc, char ** argv)
@@ -43,16 +43,9 @@ int main(int argc, char ** argv)
         return EXIT_FAILURE;
     }
     string input(argv[1]);
-    LexemHandler curLexem = {BEGIN, 0.};
-    size_t curPosition = 0;
-    int bCount = 0;
     try
     {
-        getNextLexem(input, curPosition, curLexem, bCount);
-        double tmp = expression(input, curPosition, curLexem, bCount);
-        while(curLexem.type != END)
-            getNextLexem(input, curPosition, curLexem, bCount);
-        cout << tmp << endl;
+        cout << calc(input) << endl;
     }
     catch(const exception& e)
     {
@@ -60,6 +53,17 @@ int main(int argc, char ** argv)
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
+}
+double calc(const string& input)
+{
+    LexemHandler curLexem = {BEGIN, 0.};
+    size_t curPosition = 0;
+    int bCount = 0;
+    getNextLexem(input, curPosition, curLexem, bCount);
+    double tmp = expression(input, curPosition, curLexem, bCount);
+    while(curLexem.type != END)
+        getNextLexem(input, curPosition, curLexem, bCount);
+    return tmp;
 }
 void getNextLexem(const string& input, size_t& curPosition, LexemHandler& curLexem, int& bCount)
 { 
@@ -208,9 +212,7 @@ double mult(const string& input, size_t& curPosition, LexemHandler& curLexem, in
         getNextLexem(input, curPosition, curLexem, bCount);
         tmp = expression(input, curPosition, curLexem, bCount);
         if(curLexem.type == CLOSE_BRAKE)
-        {
             getNextLexem(input, curPosition, curLexem, bCount);
-        }
     }    
     else if(curLexem.type == UN_MINUS)
     {
