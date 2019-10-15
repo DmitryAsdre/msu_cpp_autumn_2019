@@ -34,7 +34,6 @@ double mult(const string& input, size_t& curPosition, LexemHandler& curLexem, in
 
 double calc(const string& input);
 
-
 int main(int argc, char ** argv)
 {
     if(argc != 2)
@@ -54,6 +53,7 @@ int main(int argc, char ** argv)
     }
     return EXIT_SUCCESS;
 }
+
 double calc(const string& input)
 {
     LexemHandler curLexem = {BEGIN, 0.};
