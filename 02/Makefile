@@ -7,5 +7,7 @@ main : main.o LinearAllocator.o
 	g++ main.o LinearAllocator.o -o main
 run : main 
 	./main $(ARGS)
+test : 
+	python2 test.py
 clean : 
 	rm -rf main.o LinearAllocator.o main
