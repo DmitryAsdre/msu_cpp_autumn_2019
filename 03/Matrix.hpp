@@ -4,8 +4,6 @@
 #include <vector>
 #include <stdexcept>
 #include <iostream>
-using namespace std;
-
 class Matrix
 {
     public:
@@ -23,7 +21,7 @@ class Matrix
     private:
         size_t columns;
         size_t rows;
-        vector<int> data;
+        std :: vector<int> data;
         SubClassMatrix subClass;
     public:
         Matrix(size_t r, size_t c);
@@ -45,6 +43,6 @@ class Matrix
         bool operator==(const Matrix& m)const;
         bool operator!=(const Matrix& m)const;
 
-        friend ostream& operator <<(ostream& os, const Matrix& m);
+        friend std::ostream& operator <<(std::ostream& os, const Matrix& m);
 };
 #endif

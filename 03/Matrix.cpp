@@ -12,7 +12,7 @@ Matrix :: Matrix(size_t r, size_t c, int value):
     subClass(*this)
 {
     data.resize(columns*rows);
-    fill(data.begin(), data.end(), value);
+    std::fill(data.begin(), data.end(), value);
 }
 Matrix :: Matrix(size_t r, size_t c, int * value):
     columns(c),
@@ -108,14 +108,14 @@ bool Matrix :: operator!=(const Matrix& m) const
 {
     return !(*this == m);
 }
-ostream& operator <<(ostream& os, const Matrix& m) 
+std::ostream& operator <<(std::ostream& os, const Matrix& m) 
 {
-    os << "Rows - " << m.rows << " Columns - " << m.columns << endl;
+    os << "Rows - " << m.rows << " Columns - " << m.columns << std::endl;
     for(int i = 0; i < m.rows; i++)
     {
         for(int j = 0; j < m.columns; j++)
             os << m[i][j] << " ";
-        os << endl;
+        os << std::endl;
     }
     return os;
 }
