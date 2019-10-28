@@ -42,5 +42,6 @@ class Matrix
         Matrix& operator/=(int value);
 
         bool operator==(const Matrix& m)const;
+        bool operator!=(const Matrix& m)const;
 };
 #endif

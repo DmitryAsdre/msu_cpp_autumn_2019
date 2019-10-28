@@ -104,3 +104,7 @@ bool Matrix :: operator==(const Matrix& m)const
     }
     return true;
 }
+bool Matrix :: operator!=(const Matrix& m) const
+{
+    return !(*this == m);
+}

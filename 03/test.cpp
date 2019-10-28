@@ -51,6 +51,11 @@ int main()
             cout << "Test 5 passed" << endl;
         else
             cout << "Test 5 not passed" << endl;
+        Matrix m3(10, 10, 1);
+        if(m3 != m)
+            cout << "Test 6 passed" << endl;
+        else 
+            cout << "Test 6 not passed" << endl;
     }
     catch(const std::exception& e)
     {
