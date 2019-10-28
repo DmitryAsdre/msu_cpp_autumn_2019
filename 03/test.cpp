@@ -60,7 +60,6 @@ int main()
     catch(const std::exception& e)
     {
         cout << e.what() << endl;
-        cout << "Hello world" << endl;
         exit(EXIT_FAILURE);
     }  
     cout << " end " << endl;

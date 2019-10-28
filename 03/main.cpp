@@ -14,7 +14,7 @@ int main()
         m -= 1000;
         cout << m << endl;
         m /= 10;
-        cout << m << endl;
+        cout << m << endl; 
     }   
     catch(exception& e)
     {
