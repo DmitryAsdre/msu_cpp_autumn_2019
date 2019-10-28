@@ -1,4 +1,4 @@
-#Class Matrix 
-</b> Класс матриц </b>
-</b> make test - test </b>
-</b> make run - run </b>
+# Class Matrix 
+Класс матриц <br />
+make test - test <br />
+make run - run <br />
