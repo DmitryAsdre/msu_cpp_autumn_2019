@@ -108,3 +108,14 @@ bool Matrix :: operator!=(const Matrix& m) const
 {
     return !(*this == m);
 }
+ostream& operator <<(ostream& os, const Matrix& m) 
+{
+    os << "Rows - " << m.rows << " Columns - " << m.columns << endl;
+    for(int i = 0; i < m.rows; i++)
+    {
+        for(int j = 0; j < m.columns; j++)
+            os << m[i][j] << " ";
+        os << endl;
+    }
+    return os;
+}

@@ -7,13 +7,14 @@ int main()
     try
     {
         Matrix m(12, 10, 100);
-        cout << "Rows - " << m.getRows() << " Columns-" << m.getColumns() << endl;
-        for(int i = 0; i < m.getRows(); i++)
-        {
-            for(int j = 0; j < m.getColumns(); j++)
-                cout << m[i][j] << " ";
-            cout << endl;
-        }
+        m *= 10;
+        cout << m << endl;
+        m += 10;
+        cout << m << endl;
+        m -= 1000;
+        cout << m << endl;
+        m /= 10;
+        cout << m << endl;
     }   
     catch(exception& e)
     {

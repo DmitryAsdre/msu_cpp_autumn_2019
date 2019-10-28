@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <vector>
 #include <stdexcept>
+#include <iostream>
 using namespace std;
 
 class Matrix
@@ -43,5 +44,7 @@ class Matrix
 
         bool operator==(const Matrix& m)const;
         bool operator!=(const Matrix& m)const;
+
+        friend ostream& operator <<(ostream& os, const Matrix& m);
 };
 #endif
