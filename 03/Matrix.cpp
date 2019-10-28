@@ -30,12 +30,12 @@ int Matrix :: getColumns()const
 }
 Matrix :: SubClassMatrix& Matrix :: operator[](int r)
 {
-    subClass.r = r;
+    subClass.setRow(r);
     return subClass;
 }
 const Matrix :: SubClassMatrix& Matrix :: operator[](int r) const
 {
-    subClass.r = r;
+    subClass.setRow(r);
     return subClass;
 }
 Matrix :: SubClassMatrix :: SubClassMatrix(Matrix& p):
@@ -53,6 +53,10 @@ int Matrix :: SubClassMatrix :: operator[](int c) const
     if(c >= parent.columns || r >= parent.rows)
         throw std::out_of_range("out of range");
     return parent.data[r*parent.columns + c];
+}
+void Matrix :: SubClassMatrix :: setRow(size_t row) const
+{
+       r = row;
 }
 Matrix& Matrix :: operator*=(int value)
 {

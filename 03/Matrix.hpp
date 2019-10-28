@@ -10,14 +10,14 @@ class Matrix
     public:
         class SubClassMatrix
         {
-            public:
-                mutable size_t r;
             private:
+                mutable size_t r;
                 Matrix& parent;
             public:
                 SubClassMatrix(Matrix& p);
                 int& operator[](int c);    
                 int operator[](int c)const;
+                void setRow(size_t r)const;
         }; 
     private:
         size_t columns;

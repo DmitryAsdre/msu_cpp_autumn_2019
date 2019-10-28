@@ -9,6 +9,7 @@ int main()
         Matrix m(12, 10, 100);
         cout << m.getRows() << " " << m.getColumns() << endl;
         m /= 100;
+        cout <<  m[1].r << endl;
         for(int i = 0; i < 12; i++)
         {
             for(int j = 0; j < 10; j++)
