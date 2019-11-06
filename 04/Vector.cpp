@@ -21,6 +21,15 @@ Vector::Vector(const unsigned int* d, size_t s):
         throw std::runtime_error("cannot alloc memory");
     std::memcpy(data, d, sizeof(unsigned int)*size);
 }
+Vector::Vector(const Vector& v):
+    data(new unsigned int [v.getLen()]),
+    size(v.getSize()),
+    len(v.getLen())
+{
+    if(data == NULL)
+        throw std::runtime_error("cannot alloc memory");
+    std::memcpy(data, v.data, size*sizeof(unsigned int));
+}
 Vector::~Vector()
 {
     if(data != NULL)
@@ -95,4 +104,15 @@ void Vector::decrease()
         delete[] data;
         data = newData;
     }
+}
+Vector& Vector::operator=(const Vector& copy)
+{
+    if(data != NULL)
+        delete[] data;
+    len = copy.len;
+    size = copy.size;
+    data = new unsigned int[len];
+    if(data == NULL)
+        throw std::runtime_error("cannot alloc memory");
+    std::memcpy(data, copy.data, size*sizeof(unsigned int));
 }

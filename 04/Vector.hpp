@@ -17,6 +17,7 @@ class Vector
     public:
         Vector();
         Vector(size_t l);
+        Vector(const Vector& v);
         Vector(const unsigned int* d, size_t s);
 
         ~Vector();
@@ -27,5 +28,7 @@ class Vector
         void strip();
         unsigned int operator[](size_t i)const;
         unsigned int& operator[](size_t i);
+
+        Vector& operator =(const Vector& copy);
 };
 #endif
