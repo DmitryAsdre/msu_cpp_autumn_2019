@@ -4,6 +4,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <cstring>
+#include <iostream>
 class Vector
 {
     private:
@@ -24,7 +25,7 @@ class Vector
         size_t getLen()const;
         void push_back(unsigned int tmp);
         void strip();
-        unsigned int operator [](size_t i)const;
-        unsigned int& operator [](size_t i);
+        unsigned int operator[](size_t i)const;
+        unsigned int& operator[](size_t i);
 };
 #endif

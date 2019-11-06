@@ -52,17 +52,47 @@ unsigned int& Vector::operator[](size_t i)
 
 void Vector::push_back(unsigned int tmp)
 {
-    if(size == len)
-        increase();
+    increase();
     data[size] = tmp;
     size++;
 }
 void Vector::increase()
 {
-    unsigned int* new_data = new unsigned int[size*2];
-    if(new_data == NULL)
-        throw std::runtime_error("cannot alloc mem");
-    std::memcpy(new_data, data, size*2*sizeof(unsigned int));
-    data = new_data;
-    size *= 2;
+    if(size == len)
+    {
+        len = !len ? 1 : len;
+        len *= 2;
+        unsigned int* newData = new unsigned int[len];
+        if(newData == NULL)
+            throw std::runtime_error("cannot alloc memory");
+        std::memcpy(newData, data, size*sizeof(unsigned int));
+        delete[] data;
+        data = newData;
+    }
+}
+void Vector::strip()
+{
+    if(size == 0)
+        return;
+    for(size_t i = size - 1; i >= 0; i--)
+    {
+        if(data[i] == 0) 
+            size--;
+        else 
+            break;
+    }
+    decrease();
+}
+void Vector::decrease()
+{
+    if(size < len/4 && len > 2)
+    {
+        unsigned int* newData = new unsigned int [len/2];
+        if(newData == NULL)
+            throw std::runtime_error("cannot alloc memory");
+        len /= 2;
+        std::memcpy(newData, data, size*sizeof(unsigned int));
+        delete[] data;
+        data = newData;
+    }
 }
