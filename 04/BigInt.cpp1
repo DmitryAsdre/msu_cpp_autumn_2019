@@ -1,0 +1,96 @@
+#include "BigInt.hpp"
+int sgn(int a)
+{
+    return a >= 0 ? 1 : 0;
+}
+BigInt :: BigInt():
+    data(Vector()),
+    sign(1)
+{
+    data.push_back(0);
+}
+BigInt :: BigInt(int t):
+    data(Vector()),
+    sign(sgn(t))
+{
+    unsigned int tTmp = abs(t);
+    data.push_back(t);
+}
+BigInt :: BigInt(unsigned int t):
+    data(Vector()),
+    sign(1)
+{
+    data.push_back(t);
+}
+BigInt :: BigInt(const Vector& v, int sign_):
+    data(v),
+    sign(sign_)
+{
+    if(v.getSize() == 0)
+        data.push_back(0);
+}
+
+
+BigInt& BigInt :: operator+=(const BigInt& add)
+{
+    data.setSize(add.data.getSize());
+    unsigned long long buf = 0;
+    for(size_t i = 0; i < data.getSize(); i++)
+    {
+        buf += data[i];
+        buf += i < add.data.getSize() ? add.data[i] : 0;
+        data[i] = buf%BASE;
+        buf /= BASE;
+    }
+    //std::cout << buf << std::endl;
+    if(buf)
+        data.push_back(buf%BASE);
+    return *this;
+}
+BigInt& BigInt :: operator-=(const BigInt& sub)
+{
+    data.setSize(sub.data.getSize());
+    int shift = 0;
+    unsigned long long buf = 0;
+    unsigned long long bufSub = 0;
+    for(size_t i = 0; i < data.getSize(); i++)
+    {
+        bufSub = i < sub.data.getSize() ? sub.data[i] : 0;
+        bufSub += shift;
+        shift = 0;
+        buf = data[i];
+        if(buf >= bufSub)
+            data[i] = buf - bufSub;
+        else
+        {
+            shift = 1;
+            buf += BASE;
+            data[i] = buf - bufSub;
+        }        
+    }
+    if(shift)
+    {
+        sign *= -1;
+        for(size_t i = 0; i < data.getSize(); i++)
+            data[i] = (BASE - data[i];
+    }
+    data.strip();
+    return *this;
+}
+BigInt& BigInt :: operator -()
+{
+    sign *= -1;
+    return *this;
+}
+std::string BigInt::toString()const
+{  
+    std::string res;
+    if(sign == -1)
+        res += std::to_string(-1);
+    for(size_t i = data.getSize(); i >= 1; i--)
+    {
+        res += std::bitset<32>(data[i - 1]).to_string();
+        res += " ";
+    }
+    return res;
+}

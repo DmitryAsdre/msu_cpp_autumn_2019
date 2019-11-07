@@ -26,6 +26,8 @@ class Vector
         size_t getLen()const;
         void push_back(unsigned int tmp);
         void strip();
+        void setLen(size_t newLen);
+        void setSize(size_t newSize);
         unsigned int operator[](size_t i)const;
         unsigned int& operator[](size_t i);
 
