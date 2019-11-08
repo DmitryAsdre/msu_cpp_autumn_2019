@@ -1,4 +1,3 @@
-#include "Vector.hpp"
 #include "BigInt.hpp"
 #include <iostream>
 #include <limits.h>
@@ -10,7 +9,7 @@ int main()
     while(b != -100)
     {
         --b;
-        cout << b << endl;;
+        cout << b + b1 << endl;;
     }
     return 0;
 }

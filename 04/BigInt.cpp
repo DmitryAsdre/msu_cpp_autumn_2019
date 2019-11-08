@@ -122,6 +122,8 @@ BigInt& BigInt :: operator += (const BigInt& add)
         buf += i < add.size ? add.data[i] : 0;
         data[i] = buf%BASE;
         buf /= BASE; 
+        if(size <= i)
+            size++;
     }
     if(buf)
     {
@@ -191,6 +193,8 @@ BigInt& BigInt::operator-=(const BigInt& sub)
             }
             data[i] = buf2 - buf1;
         }
+        if(size <= i)
+            size++;
     }
     strip();
     return *this;
