@@ -27,7 +27,6 @@ class BigInt
         BigInt(const BigInt& copy);
         BigInt(int t);
         BigInt(unsigned int t);
-        BigInt(unsigned char* data_, size_t size_, int sign_);
         BigInt(const std::string& str);
 
 
