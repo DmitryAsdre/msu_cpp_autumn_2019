@@ -1,4 +1,4 @@
-# LinearAllocator
+# class BigInt
 make run  - run main.cpp<br />
 make generate - сгенерировать файл sample.dat, где хранится часть тестов <br />
 make test - запустить test.cpp с файлом тестов samples.dat <br />
