@@ -11,7 +11,7 @@ test.o : test.cpp
 Test : bigint.o test.o
 	g++ -g test.o bigint.o -o test
 generate : 
-	python3 generate.py
+	python3 generator.py
 test : Test
 	python3 test.py
 run : main
