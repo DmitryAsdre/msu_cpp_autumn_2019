@@ -32,6 +32,8 @@ BigInt :: BigInt(int t):
     if(data == NULL)
         throw std::runtime_error("cannot alloc memory");
     t = abs(t);
+    if(t == 0)
+        size = 1;
     while(t != 0)
     {
         data[size] = t%BASE;
@@ -68,7 +70,7 @@ BigInt :: BigInt(const std::string& str):
         if(isdigit(str[i - 1]))
         {
             buf = str[i - 1];
-            data[size] = std::stoi(buf);
+            data[size] = (unsigned char)(str[i - 1] - '0');
             size++;
         }
         else 
@@ -111,6 +113,7 @@ BigInt& BigInt :: operator += (const BigInt& add)
         sign *= -1;
         *this -= add;
         sign *= -1;
+        strip();
         return *this;
     }
     if(len < add.size)
@@ -157,6 +160,7 @@ BigInt& BigInt::operator-=(const BigInt& sub)
         sign *= -1;
         *this += sub;
         sign *= -1;
+        strip();
         return *this;
     }
     bool amax = BigInt::amax(*this, sub);
@@ -199,10 +203,13 @@ BigInt& BigInt::operator-=(const BigInt& sub)
     strip();
     return *this;
 }
-BigInt& BigInt::operator -()
+BigInt BigInt::operator -()
 {
-    sign *= -1;
-    return *this;
+    BigInt tmp(*this);
+    if(tmp == 0)
+        return tmp;
+    tmp.sign *= -1;
+    return tmp;
 }
 BigInt BigInt::operator+(const BigInt& add)const
 {
@@ -327,6 +334,7 @@ BigInt& BigInt::operator=(const BigInt& tmp)
         std::memset(data, 0, len);
         std::memcpy(data, tmp.data, len);
         size = tmp.size;
+        sign = tmp.sign;
     }
     else
     {
@@ -337,6 +345,7 @@ BigInt& BigInt::operator=(const BigInt& tmp)
         std::memcpy(data, tmp.data, tmp.size*sizeof(unsigned char));
         size = tmp.size;
         len = tmp.len;
+        sign = tmp.sign;
     }
     return *this;
 }

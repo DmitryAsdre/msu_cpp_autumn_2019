@@ -31,7 +31,7 @@ class BigInt
         BigInt(const std::string& str);
 
 
-        BigInt& operator -();
+        BigInt operator -();
 
         BigInt operator +(const BigInt& add)const;
         BigInt operator -(const BigInt& add)const;

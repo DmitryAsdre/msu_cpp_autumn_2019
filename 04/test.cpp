@@ -5,39 +5,56 @@
 using namespace std;
 int main(int argc, char** argv)
 {
-    if(argc != 4)
+    if(argc != 4 && argc != 3)
     {
         cout << "unexpected input" << endl;
         return EXIT_FAILURE;
     }
     try
     {
-        BigInt a(argv[1]);
-        BigInt b(argv[3]);
-        string lexem(argv[2]);
-        if(lexem == "+")
-            cout << a + b << endl;
-        else if(lexem == "-")
-            cout << a - b << endl;
-        else if(lexem == ">")
-            cout << (a > b) << endl;
-        else if(lexem == "<")
-            cout << (a < b) << endl;
-        else if(lexem == "!=")
-            cout << (a != b) << endl;
-        else if(lexem == "+=")
-            cout << (a += b) << endl;
-        else if(lexem == "-=")
-            cout << (a -= b) << endl;
-        else if(lexem == ">=")
-            cout << (a >= b) << endl;
-        else if(lexem == "<=")
-            cout << (a <= b) << endl;
-        else if(lexem == "==")
-            cout << (a == b) << endl;
-        else
+        if(argc == 4)
         {
-            cout << "unknown lexem" << endl;
+            BigInt a(argv[1]);
+            BigInt b(argv[3]);
+            string lexem(argv[2]);
+            if(lexem == "+")
+                cout << a + b << endl;
+            else if(lexem == "-")
+                cout << a - b << endl;
+            else if(lexem == ">")
+                cout << (a > b) << endl;
+            else if(lexem == "<")
+                cout << (a < b) << endl;
+            else if(lexem == "!=")
+                cout << (a != b) << endl;
+            else if(lexem == "+=")
+                cout << (a += b) << endl;
+            else if(lexem == "-=")
+                cout << (a -= b) << endl;
+            else if(lexem == ">=")
+                cout << (a >= b) << endl;
+            else if(lexem == "<=")
+                cout << (a <= b) << endl;
+            else if(lexem == "==")
+                cout << (a == b) << endl;
+            else
+            {
+                cout << "unknown lexem" << endl;
+            }
+        }
+        else 
+        {
+            BigInt a(argv[2]);
+            string lexem(argv[1]);
+            if(lexem == "--")
+                cout << --a << endl;
+            else if(lexem == "++")
+                cout << ++a << endl;
+            else if(lexem == "-")
+                cout << -a << endl;
+            else 
+                cout << "unknown lexem " << endl;
+            
         }        
     }
     catch(const std::exception& e)
