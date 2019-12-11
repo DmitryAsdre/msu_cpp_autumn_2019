@@ -58,6 +58,7 @@ void test1()
     catch(const std::exception& e)
     {
         std::cout << e.what() << endl;
+        cout << "Test 1 not passed" << endl;
     }
 }
 void test2()
@@ -71,6 +72,7 @@ void test2()
     catch(const std::exception& e)
     {
         std::cout << e.what() << endl;
+        cout << "Test 2 not passed" << endl;
     }
 }
 void test3()
