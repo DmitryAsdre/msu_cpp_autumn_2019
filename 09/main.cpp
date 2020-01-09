@@ -9,7 +9,7 @@
 
 using namespace std;
 
-const size_t maxBuf = 1024 * 1024;
+const size_t maxBuf = 1 << 20;
 
 void copy(const string& nameIn, const string& nameOut)
 {
@@ -124,7 +124,7 @@ int main(int argc, char** argv){
             len = stoi(argv[1]);
         writeRandomFile("input", maxBuf*len);
         vector<string> names;
-        uint64_t *buf = new uint64_t [1024 * 1024];
+        uint64_t *buf = new uint64_t [maxBuf];
         ifstream in("input", ios::binary);
         ofstream out;
 
@@ -132,7 +132,7 @@ int main(int argc, char** argv){
             string name = "output" + std::to_string(i) + ".bin";
             names.push_back(name);
 
-            in.read((char*) buf, 1024 * 1024 * sizeof(uint64_t));
+            in.read((char*) buf, maxBuf * sizeof(uint64_t));
             size_t cnt = in.gcount();
 
             if(cnt){
