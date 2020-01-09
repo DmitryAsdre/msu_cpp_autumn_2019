@@ -85,15 +85,18 @@ void mergeTwoFiles(const string& name1, const string& name2, const string& outpu
 void merge3(const vector<string>& names)
 {
     copy(names[0], "temp" + to_string(0) + ".temp");
-    remove(names[0].c_str());
+    if(remove(names[0].c_str()))
+        cerr << "cannot remove file" << endl;
     for(size_t i = 1; i < names.size() - 1; i++)
     {
         if(i < names.size() - 2)
             mergeTwoFiles("temp" + to_string(i - 1) + ".temp", names[i], "temp" + to_string(i) + ".temp");
         else 
             mergeTwoFiles("temp" + to_string(i - 1) + ".temp", names[i], "sorted.bin");
-        remove(("temp" + to_string(i - 1) + ".temp").c_str());
-        remove(names[i].c_str());
+        if(remove(("temp" + to_string(i - 1) + ".temp").c_str()))
+            cerr << "cannot remove file" << endl;
+        if(remove(names[i].c_str()))
+            cerr << "cannot remove file" << endl;
     }
 }
 void writeRandomFile(const string& name, size_t size)
@@ -113,61 +116,68 @@ void writeSortedFile(const string& name, uint64_t l, uint64_t r, uint64_t add)
     out.close();
 }
 int main(int argc, char** argv){
-    size_t len(5);
-    srand(time(NULL));
-    if(argc != 1)
-        len = stoi(argv[1]);
-    writeRandomFile("input", maxBuf*len);
-    vector<string> names;
-    uint64_t *buf = new uint64_t [1024 * 1024];
-    ifstream in("input", ios::binary);
-    ofstream out;
+    try
+    {
+        size_t len(5);
+        srand(time(NULL));
+        if(argc != 1)
+            len = stoi(argv[1]);
+        writeRandomFile("input", maxBuf*len);
+        vector<string> names;
+        uint64_t *buf = new uint64_t [1024 * 1024];
+        ifstream in("input", ios::binary);
+        ofstream out;
 
-    for (size_t i = 0; !in.eof(); i++){
-        string name = "output" + std::to_string(i) + ".bin";
-        names.push_back(name);
-
-        in.read((char*) buf, 1024 * 1024 * sizeof(uint64_t));
-        size_t cnt = in.gcount();
-
-        if(cnt){
-            size_t read_ = cnt / (2 * sizeof(uint64_t));
-
-            thread th1([buf, read_]() {
-                sort(buf, buf + read_);
-            });
-
-            thread th2([buf, read_]() {
-                sort(buf + read_, buf + 2 * read_);
-            });
-
-            th1.join();
-            th2.join();
-
-            out.open(name, std::ios::binary);
-            if(!out.is_open()){
-                delete[] buf;
-                throw runtime_error("can't open file");
-                return 1;
-            }
-            out.write((char*) buf, read_ * sizeof(uint64_t));
-            out.close();
-            ++i;
-
-            name = "output" + to_string(i) + ".bin";
+        for (size_t i = 0; !in.eof(); i++){
+            string name = "output" + std::to_string(i) + ".bin";
             names.push_back(name);
-            out.open(name, ios::binary);
-            if(!out.is_open()){
-                delete[] buf;
-                throw runtime_error("can't open file");
-                return 1;
+
+            in.read((char*) buf, 1024 * 1024 * sizeof(uint64_t));
+            size_t cnt = in.gcount();
+
+            if(cnt){
+                size_t read_ = cnt / (2 * sizeof(uint64_t));
+
+                thread th1([buf, read_]() {
+                    sort(buf, buf + read_);
+                });
+
+                thread th2([buf, read_]() {
+                    sort(buf + read_, buf + 2 * read_);
+                });
+
+                th1.join();
+                th2.join();
+
+                out.open(name, std::ios::binary);
+                if(!out.is_open()){
+                    delete[] buf;
+                    throw runtime_error("can't open file");
+                    return 1;
+                }
+                out.write((char*) buf, read_ * sizeof(uint64_t));
+                out.close();
+                ++i;
+
+                name = "output" + to_string(i) + ".bin";
+                names.push_back(name);
+                out.open(name, ios::binary);
+                if(!out.is_open()){
+                    delete[] buf;
+                    throw runtime_error("can't open file");
+                    return 1;
+                }
+                out.write((char*) (buf + read_), cnt - read_ * sizeof(uint64_t));
+                out.close();
             }
-            out.write((char*) (buf + read_), cnt - read_ * sizeof(uint64_t));
-            out.close();
         }
+        merge3(names);
+        in.close();
+        delete[] buf;
     }
-    merge3(names);
-    in.close();
-    delete[] buf;
+    catch(exception &e)
+    {
+        cerr << e.what() << endl;
+    } 
     return 0;
 }
