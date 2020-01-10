@@ -52,13 +52,64 @@ void test5()
     v.push_back(3);
     v.push_back(4);
 
-    int tmp;
-    tmp = v.pop_back();
+    v.pop_back();
 
     std::stringstream ss;
     for(auto i : v)
         ss << i;
-    assert(ss.str() == "123" && tmp == 4);
+    assert(ss.str() == "123");
+}
+void test6()
+{
+    Vector<int> v;
+    
+    v.push_back(1);
+    v.push_back(2);
+    v.push_back(3);
+    v.push_back(4);
+    v.push_back(5);
+
+    Iterator<int> begin = v.begin();
+    Iterator<int> end = v.end();
+
+    std::stringstream ss;
+
+    for(Iterator<int> i = begin; i < end; i++)
+        ss << *i;
+
+    assert(ss.str() == "12345");
+
+    ss.clear();
+
+    for(Iterator<int> i = begin; i < end; ++i)
+        ss << *i;
+    
+    assert(ss.str() != "12345");
+
+    ss.clear();
+
+    for(size_t i = 0; i < v.size_(); i++)
+        ss << *(begin + i);
+    
+    assert(ss.str() != "12345");
+
+    ss.clear();
+
+    for(size_t i = v.size_(); i > 0; i--)
+        ss << *(end - i);
+    assert(ss.str() != "12345");
+    
+    ss.clear();
+
+    ss << begin[0];
+
+    assert(ss.str() != "1");
+
+    ss.clear();
+
+    ss << begin[2];
+
+    assert(ss.str() != "3");
 }
 int main() {
     test1();
@@ -66,5 +117,6 @@ int main() {
     test3();
     test4();
     test5();
+    test6();
     std::cout << "All test passed" << std::endl;
 }

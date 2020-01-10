@@ -34,35 +34,105 @@ class Iterator: public std::iterator<std::random_access_iterator_tag, T>
     private:
         T* data;
     public:
-        explicit Iterator(T* data_) :
+        Iterator(T* data_) :
         data(data_)
+        {}
+        Iterator(const Iterator& it):
+        data(it.data)
         {}
 
         bool operator ==(const Iterator<T>& equal) const 
         {
             return data == equal.data;
         }
-
         bool operator !=(const Iterator<T>& not_equal) const
         {
             return data != not_equal.data;
         }
+        bool operator >(const Iterator<T>& it) const
+        {
+            return (data > it.data);
+        }
+        bool operator <(const Iterator<T>& it) const
+        {
+            return data < it.data;
+        }
+        bool operator >=(const Iterator<T>& it) const
+        {
+            return data >= it.data;
+        }
+        bool operator <=(const Iterator<T>& it) const
+        {
+            return data <= it.data;
+        }
+        T& operator[](size_t i)
+        {
+            return data[i];
+        }
+        const T& operator[](size_t i) const 
+        {
+            return data[i];
+        }
 
-        T& operator*()const 
+        Iterator operator+(size_t size)
+        {
+            Iterator tmp(this->data + size);
+            return tmp;
+        }
+        Iterator& operator+=(size_t size)
+        {
+            this->data += size;
+            return *this;
+        }
+        Iterator operator-(size_t size)
+        {
+            Iterator tmp(this->data + size);
+            return tmp;
+        }
+        Iterator& operator-=(size_t size)
+        {
+            this->data -= size;
+            return *this;
+        }
+        
+        const T& operator*()const 
         {
             return *data;
         }
-
+        
+        T& operator*()
+        {
+            return *data;
+        }
         Iterator& operator++()
         {
             data++;
             return *this;
         }
-
+        Iterator operator++(int)
+        {
+            Iterator tmp(*this);
+            data++;
+            return tmp;
+        }
         Iterator& operator--()
         {
             data--;
             return *this;
+        }
+        Iterator operator--(int)
+        {
+            Iterator tmp(*this);
+            data--;
+            return tmp;
+        }
+        const T& operator ->()const 
+        {
+            return *data;
+        }
+        T& operator->()
+        {
+            return *data;
         }
 };
 
@@ -125,11 +195,10 @@ class Vector
             return ptr[ind];
         }
 
-        T pop_back()
+        void pop_back()
         {
             cur_size--;
             allocator.destroy(ptr + cur_size);
-            return ptr[cur_size];
         }
 
         void add(size_t cap)
