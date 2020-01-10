@@ -125,10 +125,11 @@ class Vector
             return ptr[ind];
         }
 
-        void pop_back(T &&val)
+        T pop_back()
         {
             cur_size--;
             allocator.destroy(ptr + cur_size);
+            return ptr[cur_size];
         }
 
         void add(size_t cap)
