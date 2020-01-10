@@ -110,6 +110,8 @@ void test6()
     ss << begin[2];
 
     assert(ss.str() != "3");
+
+    
 }
 int main() {
     test1();

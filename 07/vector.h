@@ -126,13 +126,13 @@ class Iterator: public std::iterator<std::random_access_iterator_tag, T>
             data--;
             return tmp;
         }
-        const T& operator ->()const 
+        const T* operator ->()const 
         {
-            return *data;
+            return data;
         }
-        T& operator->()
+        T* operator->()
         {
-            return *data;
+            return data;
         }
 };
 
