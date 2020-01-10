@@ -86,7 +86,7 @@ void merge3(const vector<string>& names)
 {
     copy(names[0], "temp" + to_string(0) + ".temp");
     if(remove(names[0].c_str()))
-        cerr << "cannot remove file" << endl;
+        throw runtime_error("cannot remove file");
     for(size_t i = 1; i < names.size() - 1; i++)
     {
         if(i < names.size() - 2)
@@ -94,9 +94,9 @@ void merge3(const vector<string>& names)
         else 
             mergeTwoFiles("temp" + to_string(i - 1) + ".temp", names[i], "sorted.bin");
         if(remove(("temp" + to_string(i - 1) + ".temp").c_str()))
-            cerr << "cannot remove file" << endl;
+            throw runtime_error("cannot remove file");
         if(remove(names[i].c_str()))
-            cerr << "cannot remove file" << endl;
+            throw runtime_error("cannot remove file");
     }
 }
 void writeRandomFile(const string& name, size_t size)
@@ -178,6 +178,7 @@ int main(int argc, char** argv){
     catch(exception &e)
     {
         cerr << e.what() << endl;
+        return 1;
     } 
     return 0;
 }
